@@ -4,6 +4,15 @@
 
 - 본 프로젝트에서는 VirtualBox를 활용한다.
 - Git 저장소의 최상위 경로에 가상 디스크의 시그니쳐를 `signature.txt`에 작성하여 제출한다.
+  - 다음 디렉터리에 접근:
+    - Windows: `%HOMEDRIVE%%HOMEPATH%\VirtualBox VMs\`
+    - Linux: `~/VirtualBox VMs/`
+    - MacOS: `~/VirtualBox VMs/`
+  - `.vdi` 파일에서 sha1 형식의 시그니쳐를 추출:
+    - Windows: `certUtil -hashfile ???.vdi sha1`
+    - Linux: `sha1sum ???.vdi`
+    - MacOS: `shasum ???.vdi`
+  - `6e657c4619944be17df3c31faa030c25e43e40af`와 같은 형태의 시그니쳐 추출됨
 
 # 동료 평가 지침
 
@@ -12,6 +21,8 @@
 - hostname을 변경할 수 있다.
 - 새 계정을 생성하고 그룹에 지정할 수 있다.
 - 서버 접속 시 현시될 메시지 (`monitoring.sh`)의 원리를 숙지한다.
+- Git 저장소에 제출된 시그니쳐와 평가 시 기기의 시그니쳐가 다를 경우 0점이 부여된다.
+  - 평가 과정에서 기기의 시그니쳐가 변경될 수 있으므로 기기를 복제하거나 상태 저장 기능을 활용한다.
 
 # 제출 사항
 
