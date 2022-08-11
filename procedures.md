@@ -173,7 +173,6 @@ Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/b
 - `uname`: 시스템 정보 출력, `-a`: 모든 정보 출력
 - `nproc`: 물리 프로세서 개수 출력, `--all`: 모든 프로세서 산입
 - `/proc/cpuinfo`: 논리 프로세서 정보
-  - **(검증 필요)** `processor n`: 0 ~ N-1번 프로세서의 정보임을 의미
     - `grep`으로 `processor n`행만 추출 후 wc -l로 줄 개수를 산입
 - `free`: 메모리 사용량 출력, `-m`: 메비바이트 단위 출력
   - `grep Mem`으로 `swap`을 제외한 RAM 정보 행만 추출
@@ -195,10 +194,8 @@ Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/b
     - 3번 필드, 공백, 4번 필드, 개행 문자를 차례로 출력
 - `lsblk`: 블록 장치 (파티션)의 목록 표시
   - `grep lvm`으로 `TYPE`에 `lvm`이 지정된 행 추출 후 `wc -l`로 행의 개수 출력
-- `ss`: 소켓 상태, 즉 ssh 활성 세션의 정보 표시
-  - `grep -i tcp | wc -l`으로 대소문자 구분 없이 `tcp`가 포함된 행 개수 파악
-  - **(검증 필요)** ssh가 아닌 프로그램이 tcp 사용 시 산입 되는지
-  - **(검증 필요)** ssh가 tcp 사용 시 `ssh`라는 정보가 표시되는지
+- `ss`: 소켓 상태 정보 표시
+  - `grep -i tcp | wc -l`으로 대소문자 구분 없이 `tcp`가 포함된 행 개수 파악하여 네트웍 접속 정보만 표시
 - `who`: 로그온한 사용자 정보 표시
   - `wc -l`으로 사용자 행 개수 추출
 - `hostname`: 시스템의 `hostname` 표시, `-I`: 모든 네트웍 주소 표시
@@ -224,7 +221,7 @@ DISK_TOTAL=$(echo "${DISK_USED} ${DISK_AVAIL}" | awk '{print $1 + $2}' | tr -d '
 DISK_PCENT=$(echo "${DISK_USED} ${DISK_TOTAL}" | awk '{printf"%.2f", 100 * $1 / $2}' | tr -d '\n')
 CPU_PCENT=$(mpstat | grep all | awk '{printf "%.2f", 100 - $13}' | tr -d '\n')
 TIME_LAST_BOOT=$(who -b | awk '{printf $3" "$4"\n"}' | tr -d '\n')
-if [ "$(lsblk | grep lvm | wc -l)" -gt 0 ] ; then USAGE_LVM="yes" ; else USAGE_LVM="no" ; fi
+if [ "$(lsblk | grep lvm | wc -l)" -eq 0 ] ; then USAGE_LVM="no" ; else USAGE_LVM="yes" ; fi
 N_TCP_CON=$(ss | grep -i tcp | wc -l | tr -d '\n')
 N_USER_CON=$(who | wc -l | tr -d '\n')
 ADDR_IP=$(hostname -I | tr -d '\n' | tr -d ' ')
