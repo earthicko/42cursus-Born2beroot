@@ -1,3 +1,5 @@
+# 프로젝트 수행 지침
+
 # 데이터 준비
 
 https://www.debian.org/distrib/ 에서 완전한 설치 이미지, amd64 체계용 이미지 다운로드
