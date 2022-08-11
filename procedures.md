@@ -25,6 +25,75 @@ https://www.debian.org/distrib/ 에서 완전한 설치 이미지, amd64 체계�
 
 # 운영 체제 설정
 
+## sudo 설치 및 설정
+
+### 설치 및 사용자 추가
+
+1. `apt`를 사용하여 `sudo`를 설치한다.
+2. `groupadd user42`: `user42` 그룹을 생성한다.
+3. `donghyle` 사용자를 `user42`와 `sudo` 그룹에 추가한다.
+    - `usermod -aG user42,sudo donghyle`
+        - `-a`: 추가, `-G`: 그룹명 지정
+    - `usermod -g user42 donghyle`
+        - 사용자의 초기 그룹을 변경 **(필수적인지 불확실)**
+
+### 규칙 설정
+
+`visudo` 명령을 이용하여 `/etc/sudoers` 파일을 편집한다.
+
+- 3번까지 인증 시도 허용: `Defaults	passwd_tries=3`
+- 인증 실패 시 메시지 현시: `Defaults	authfail_message="메시지"`
+- 암호 실패 시 메시지 현시: `Defaults	badpass_message="메시지"`
+- `sudo`를 이용한 모든 행동의 입출력을 `/var/log/sudo/`에 기록하도록 설정:
+  - `Defaults	log_input`
+  - `Defaults	log_output`
+  - `Defaults	iolog_dir="/var/log/sudo/"`
+- TTY 모드를 활성화: `Defaults	requiretty`
+- `sudo`가 사용할 수 있는 경로를 제한
+  - `Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"`
+
+```
+Defaults	passwd_tries=3
+Defaults	authfail_message="메시지"
+Defaults	badpass_message="메시지"
+Defaults	log_input
+Defaults	log_output
+Defaults	iolog_dir="/var/log/sudo/"
+Defaults	requiretty
+Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
+```
+
+- `mkdir /var/log/sudo`: 디렉토리가 없을 시 생성
+
+## 네트웍 설정
+
+### SSH 서버
+
+1. `apt`를 사용하여 `openssh-server`를 설치한다.
+1. `/etc/ssh/sshd_config` 파일에서
+    - `4242`번 포트에 실행: `Port 4242`
+    - `root` 계정으로는 접속 불가: `PermitRootLogin no`
+1. 필요시 서비스를 재시작: `systemctl restart ssh`
+
+
+### 포트포워딩
+
+1. `hostname -I`로 내부 IP를 확인 (예: `10.0.2.15`)
+1. 가상 기기를 완전히 정지 및 종료
+2. VirtualBox의 메뉴에서 Tools - Network 진입
+   1. Create로 새로운 네트웍 생성
+3. 가상 기기의 설정 창에서 네트웍 메뉴 진입
+   1. 포트포워딩 대화 상자에서 Host IP에 네트웍 IP를, Guest IP에 내부 IP 입력
+   2. 어댑터 2를 Host-only Adapter로 변경 후 3-1에서 생성한 네트웍 지정
+4. 호스트에서 3-1에서 생성한 IP로 ssh 접속
+
+### 방화벽
+
+1. `apt`를 사용하여 `ufw`를 설치한다.
+1. UFW 활성화 및 시동 시 실행: `ufw enable`
+1. 기본적으로 모든 접속 차단: `ufw default deny`
+1. 4242번 포트 허용: `ufw allow 4242`
+
 ## 사용자 계정 설정
 
 ### 암호 관리 정책
@@ -64,76 +133,7 @@ password	requisite	pam_cracklib.so retry=3
 enforce_for_root minlen=10 ucredit=-1 dcredit=-1 lcredit=0 ocredit=0 maxrepeat=3 reject_username difok=7
 ```
 
-### sudo 설치 및 설정
-
-#### 설치 및 사용자 추가
-
-1. `apt`를 사용하여 `sudo`를 설치한다.
-2. `groupadd user42`: `user42` 그룹을 생성한다.
-3. `donghyle` 사용자를 `user42`와 `sudo` 그룹에 추가한다.
-    - `usermod -aG user42,sudo donghyle`
-        - `-a`: 추가, `-G`: 그룹명 지정
-    - `usermod -g user42 donghyle`
-        - 사용자의 초기 그룹을 변경 **(필수적인지 불확실)**
-
-#### 규칙 설정
-
-`visudo` 명령을 이용하여 `/etc/sudoers` 파일을 편집한다.
-
-- 3번까지 인증 시도 허용: `Defaults	passwd_tries=3`
-- 인증 실패 시 메시지 현시: `Defaults	authfail_message="메시지"`
-- 암호 실패 시 메시지 현시: `Defaults	badpass_message="메시지"`
-- `sudo`를 이용한 모든 행동의 입출력을 `/var/log/sudo/`에 기록하도록 설정:
-  - `Defaults	log_input`
-  - `Defaults	log_output`
-  - `Defaults	iolog_dir="/var/log/sudo/"`
-- TTY 모드를 활성화: `Defaults	requiretty`
-- `sudo`가 사용할 수 있는 경로를 제한
-  - `Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"`
-
-```
-Defaults	passwd_tries=3
-Defaults	authfail_message="메시지"
-Defaults	badpass_message="메시지"
-Defaults	log_input
-Defaults	log_output
-Defaults	iolog_dir="/var/log/sudo/"
-Defaults	requiretty
-Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
-```
-
-- `mkdir /var/log/sudo`: 디렉토리가 없을 시 생성
-
 **암호 및 sudo 관련 설정 후 모든 사용자의 암호를 변경한다.**
-
-## 네트웍 설정
-
-### SSH 서버
-
-1. `apt`를 사용하여 `openssh-server`를 설치한다.
-1. `/etc/ssh/sshd_config` 파일에서
-    - `4242`번 포트에 실행: `Port 4242`
-    - `root` 계정으로는 접속 불가: `PermitRootLogin no`
-1. 필요시 서비스를 재시작: `systemctl restart ssh`
-
-
-### 포트포워딩
-
-1. `hostname -I`로 내부 IP를 확인 (예: `10.0.2.15`)
-1. 가상 기기를 완전히 정지 및 종료
-2. VirtualBox의 메뉴에서 Tools - Network 진입
-   1. Create로 새로운 네트웍 생성
-3. 가상 기기의 설정 창에서 네트웍 메뉴 진입
-   1. 포트포워딩 대화 상자에서 Host IP에 네트웍 IP를, Guest IP에 내부 IP 입력
-   2. 어댑터 2를 Host-only Adapter로 변경 후 3-1에서 생성한 네트웍 지정
-4. 호스트에서 3-1에서 생성한 IP로 ssh 접속
-
-### 방화벽
-
-1. `apt`를 사용하여 `ufw`를 설치한다.
-1. UFW 활성화 및 시동 시 실행: `ufw enable`
-1. 기본적으로 모든 접속 차단: `ufw default deny`
-1. 4242번 포트 허용: `ufw allow 4242`
 
 ## 정기 메시지 설정
 
