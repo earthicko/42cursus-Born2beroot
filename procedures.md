@@ -79,7 +79,7 @@ Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/b
 ### 포트포워딩
 
 1. `hostname -I`로 내부 IP를 확인 (예: `10.0.2.15`)
-1. 가상 기기를 완전히 정지 및 종료
+1. **가상 기기를 완전히 정지 및 종료**
 2. VirtualBox의 메뉴에서 Tools - Network 진입
    1. Create로 새로운 네트웍 생성
 3. 가상 기기의 설정 창에서 네트웍 메뉴 진입
@@ -102,6 +102,10 @@ Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/b
 
 `/etc/login.defs` 파일을 편집한다.
 
+```
+sudo nano /etc/login.defs
+```
+
 - 암호 만료 시한 30일: `PASS_MAX_DAYS 30`
 - 최소 암호 변경 주기 2일: `PASS_MIN_DAYS 2`
 - 암호 만료 7일 전 경고: `PASS_WARN_AGE 7`
@@ -113,12 +117,18 @@ Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/b
 - `chage -m 2 ${USER}`: 최소 암호 변경 주기 2일
 - `chage -W 7 ${USER}`: 암호 만료 7일 전 경고
 
+```
+sudo chage -M 30 root && sudo chage -m 2 root && sudo chage -W 7 root && sudo chage -M 30 donghyle && sudo chage -m 2 donghyle && sudo chage -W 7 donghyle
+```
+
 #### 암호 복잡도
 
 `libpam-cracklib` 패키지를 `apt`를 통해 설치한다. 암호 및 인증 관련 파일은 `/etc/pam.d`에 저장된다. 암호 관리 정책은 `/etc/pam.d/common-password`에 정의되어 있다.
+
 ```
 password	requisite	pam_cracklib.so retry=3
 ```
+
 상기된 것과 비슷한 행을 찾은 후 다음 내용을 추가한다.
 
 - root에게도 규칙을 적용함: `enforce_for_root`
@@ -130,10 +140,15 @@ password	requisite	pam_cracklib.so retry=3
 - 이전 암호와 중복되지 않는 글자 최소 7개: `difok=7`
 
 ```
+sudo nano /etc/pam.d/common-password
 enforce_for_root minlen=10 ucredit=-1 dcredit=-1 lcredit=0 ocredit=0 maxrepeat=3 reject_username difok=7
 ```
 
 **암호 및 sudo 관련 설정 후 모든 사용자의 암호를 변경한다.**
+
+```
+sudo passwd
+```
 
 ## 정기 메시지 설정
 
@@ -141,7 +156,12 @@ enforce_for_root minlen=10 ucredit=-1 dcredit=-1 lcredit=0 ocredit=0 maxrepeat=3
 
 `apt`를 사용하며 `sysstat`을 설치한다.
 
-`vi /root/monitoring.sh`
+```
+sudo apt install sysstat
+sudo nano /root/monitoring.sh
+sudo chmod +x /root/monitoring.sh
+```
+
 ```bash
 #!/usr/bin/bash
 ARCHI=$(uname -a | tr -d '\n')
@@ -179,7 +199,6 @@ echo "#Sudo : ${N_SUDO} cmd"
 
 ### 정기 작업 등록
 
-- `chmod +x /root/monitoring.sh`
 - `crontab -e` (`root`로서): `cron` 유틸리티의 `root`의 table을 조작, `-e`: 편집기 실행
 - 파일에 `*/10 * * * * /root/monitoring.sh | wall` 추가
   - 분, 시, 일, 월, 요일, 명령 순서
