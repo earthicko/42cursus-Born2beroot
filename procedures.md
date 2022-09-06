@@ -12,48 +12,43 @@ https://www.debian.org/distrib/ 에서 완전한 설치 이미지, amd64 체계�
 # 운영 체제 설치
 
 1. 기기 시동
-1. Install
-1. 위치 및 로케일 설정
-1. 계정 설정
+2. Install
+3. 위치 및 로케일 설정
+4. 계정 설정
     1. hostname: `donghyle42`, domain: 임의
-    1. Full name for the new user: 임의, Username: `donghyle`
-1. Partitioning
-    1. mandatory
-       1. Guided, encrypted LVM
-       2. 따로 파티션 만들기 (`/home`)
-       3. 볼륨 그룹을 전부 사용 (최대 용량)
-    2. bonus
-       1. Manual
-       2. SCSI3 (0,0,0) (주 드라이브) 선택
-       3. pri/log 빈 공간에 파티션 2회 생성
-          1. Create a new partition, 500M, Primary, Beginning, Mount point: `/boot`
-          2. Create a new partition, max, Logical, Mount point: none (Do not mount it)
-       4. Configure encrypted volumes
-          1. Create encrypted volumes
-          2. `/dev/sda5` 선택하여 진행
-          3. passphrase 설정
-       5. Configure the Logical Volume Manager
-          1. Create volume group
-             1. Volume group name: LVMGroup
-             2. `/dev/mapper/sda5_crypt` 선택하여 진행
-          2. Create logical volume 2회
-             1. name: root, size: 2G
-             2. name: swap, size: 1G
-             3. name: home, size: 1G
-             4. name: var, size: 1G
-             5. name: srv, size: 1G
-             6. name: tmp, size: 1G
-             7. name: var-log, size: 남은 것 전부 (기본값)
-       6. Partition disks 메뉴에서 각 볼륨 설정
-          1. home: Use as Ext4, mount point `/home`
-          2. root: Use as Ext4, mount point `/`
-          3. srv: Use as Ext4, mount point `/srv`
-          4. swap: Use as swap area
-          5. tmp: Use as Ext4, mount point `/tmp`
-          6. var: Use as Ext4, mount point `/var`
-          7. var-log: Use as Ext4, mount point `/var/log`
-       7. Finish Partitioning
-2. Software selection: 모두 제외
+    2. Full name for the new user: 임의, Username: `donghyle`
+5. Partitioning
+    1. Manual
+    2. SCSI3 (0,0,0) (주 드라이브) 선택
+    3. pri/log 빈 공간에 파티션 2회 생성
+       1. Create a new partition, 500M, Primary, Beginning, Mount point: `/boot`
+       2. Create a new partition, max, Logical, Mount point: none (Do not mount it)
+    4. Configure encrypted volumes
+       1. Create encrypted volumes
+       2. `/dev/sda5` 선택하여 진행
+       3. passphrase 설정
+    5. Configure the Logical Volume Manager
+       1. Create volume group
+          1. Volume group name: LVMGroup
+          2. `/dev/mapper/sda5_crypt` 선택하여 진행
+       2. Create logical volume 2회
+          1. name: root, size: 2G
+          2. name: swap, size: 1G
+          3. name: home, size: 1G
+          4. name: var, size: 1G
+          5. name: srv, size: 1G
+          6. name: tmp, size: 1G
+          7. name: var-log, size: 남은 것 전부 (기본값)
+    6. Partition disks 메뉴에서 각 볼륨 설정
+       1. home: Use as Ext4, mount point `/home`
+       2. root: Use as Ext4, mount point `/`
+       3. srv: Use as Ext4, mount point `/srv`
+       4. swap: Use as swap area
+       5. tmp: Use as Ext4, mount point `/tmp`
+       6. var: Use as Ext4, mount point `/var`
+       7. var-log: Use as Ext4, mount point `/var/log`
+    7. Finish Partitioning
+6. Software selection: 모두 제외
 
 ---
 
@@ -238,6 +233,101 @@ echo "#Sudo : ${N_SUDO} cmd"
   - 분, 시, 일, 월, 요일, 명령 순서
   - `*/10`: 매 10분마다, `*`: 매번
   - `sleep30;`을 앞에 추가하여 30초 유예를 부여 가능
+
+# 서비스 설치
+
+## Lighttpd, MariaDB, PHP 설치
+
+### Lighttpd 설치
+
+1. `apt`를 통해 `lighttpd`를 설치한다.
+2. 80번 포트를 통한 연결을 허가한다.
+
+```
+sudo apt install lighttpd && sudo ufw allow 80
+```
+
+### MariaDB 설치
+
+1. `apt`를 통해 `mariadb-server`를 설치한다.
+2. `mysql_secure_installation`을 실행하여 MariaDB의 초기 설정을 변경한다.
+   1. 초기 root 암호는 없다 (운영 체제의 root 사용자와 다름)
+   2. root 암호를 설정하지 않는다. `n`
+   3. 익명 사용자를 제거한다. `Y`
+   4. 원격 root 접속을 불허한다. `Y`
+   5. 테스트 DB를 제거한다. `Y`
+   6. 권한 테이블을 다시 로드한다. `Y`
+3. `mariadb`를 실행하여 MariaDB에 접속하고 `exit`로 종료한다.
+
+```
+sudo apt install mariadb-server
+sudo mysql_secure_installation
+```
+```
+sudo mariadb
+CREATE DATABASE wordpress-db
+GRANT ALL ON wordpress-db.* TO 'wordpress-user'@'localhost' IDENTIFIED BY 'wordpresspass42' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+exit
+```
+```
+mariadb -u wordpress-user -p
+SHOW DATABASES;
+exit
+```
+
+### PHP 설치
+
+1. `apt`를 통해 `php-cgi`, `php-mysql`와 `wget`를 설치한다.
+2. `http://wordpress.org/latest.tar.gz`를 `/var/www/html`에 다운로드한다.
+3. 위 파일의 압축을 해제하고 원본을 삭제한다.
+4. 압축을 해제한 내용을 `/var/www/html`에 옮기고 원본을 삭제한다.
+5. 샘플 설정 파일 `/var/www/html/wp-config-sample.php`을 주 설정 파일 `/var/www/html/wp-config.php`로 설정한다.
+6. 위 파일을 편집하여 MariaDB를 참조하도록 설정한다.
+   1. `database_name_here`을 `wordpress-db`로
+   2. `username_here`을 `wordpress-user`로
+   3. `password_here`을 `wordpresspass42`로
+
+```
+sudo apt install wget && sudo wget http://wordpress.org/latest.tar.gz -P /var/www/html && sudo tar -xzvf /var/www/html/latest.tar.gz && sudo rm /var/www/html/latest.tar.gz && sudo cp -r /var/www/html/wordpress/* /var/www/html && sudo rm -rf /var/www/html/wordpress && sudo cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
+sudo vi /var/www/html/wp-config.php
+```
+
+### 필요 모듈 활성화
+
+- `fastcgi`, `fastcgi-php` 모듈을 활성화한다.
+
+```
+sudo lighty-enable-mod fastcgi && sudo lighty-enable-mod fastcgi-php && sudo service lighttpd force-reload
+```
+
+## FTP 설치
+
+1. `apt`를 통해 `vsftpd`를 설치한다.
+2. 21번 포트를 통한 연결을 허가한다.
+3. `/etc/vsftpd.conf`를 편집한다.
+   1. `#write_enable=YES`의 주석을 해제한다.
+   2. `#chroot_local_user=YES`의 주석을 해제한다.
+4. FTP로 접속한 자가 사용할 디렉토리를 생성한다.
+   1. `/home/donghyle/ftp` 디렉토리를 생성한다.
+   2. `/home/donghyle/ftp/files` 디렉토리를 생성한다.
+   3. 위 디렉토리의 소유권을 nobody:nogroup에 할당한다.
+   4. 위 디렉토리에 쓰기 권한을 모든 유저에게서 없앤다.
+
+다음 줄을 추가한다.
+```
+user_sub_token=$USER
+local_root=/home/$USER/ftp
+```
+
+1. `/etc/vsftpd.userlist`에 `donghyle42`를 추가한다.
+
+다음 줄을 추가한다.
+```
+userlist_enable=YES
+userlist_file=/etc/vsftpd.userlist
+userlist_deny=NO
+```
 
 # 작업 후 가상 기기 조작
 
