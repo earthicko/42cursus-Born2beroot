@@ -18,10 +18,42 @@ https://www.debian.org/distrib/ 에서 완전한 설치 이미지, amd64 체계�
     1. hostname: `donghyle42`, domain: 임의
     1. Full name for the new user: 임의, Username: `donghyle`
 1. Partitioning
-    1. Guided, encrypted LVM
-    1. 따로 파티션 만들기 (`/home`)
-    1. 볼륨 그룹을 전부 사용 (최대 용량)
-2. 기본값으로 계속 진행
+    1. mandatory
+       1. Guided, encrypted LVM
+       2. 따로 파티션 만들기 (`/home`)
+       3. 볼륨 그룹을 전부 사용 (최대 용량)
+    2. bonus
+       1. Manual
+       2. SCSI3 (0,0,0) (주 드라이브) 선택
+       3. pri/log 빈 공간에 파티션 2회 생성
+          1. Create a new partition, 500M, Primary, Beginning, Mount point: `/boot`
+          2. Create a new partition, max, Logical, Mount point: none (Do not mount it)
+       4. Configure encrypted volumes
+          1. Create encrypted volumes
+          2. `/dev/sda5` 선택하여 진행
+          3. passphrase 설정
+       5. Configure the Logical Volume Manager
+          1. Create volume group
+             1. Volume group name: LVMGroup
+             2. `/dev/mapper/sda5_crypt` 선택하여 진행
+          2. Create logical volume 2회
+             1. name: root, size: 2G
+             2. name: swap, size: 1G
+             3. name: home, size: 1G
+             4. name: var, size: 1G
+             5. name: srv, size: 1G
+             6. name: tmp, size: 1G
+             7. name: var-log, size: 남은 것 전부 (기본값)
+       6. Partition disks 메뉴에서 각 볼륨 설정
+          1. home: Use as Ext4, mount point `/home`
+          2. root: Use as Ext4, mount point `/`
+          3. srv: Use as Ext4, mount point `/srv`
+          4. swap: Use as swap area
+          5. tmp: Use as Ext4, mount point `/tmp`
+          6. var: Use as Ext4, mount point `/var`
+          7. var-log: Use as Ext4, mount point `/var/log`
+       7. Finish Partitioning
+2. Software selection: 모두 제외
 
 ---
 
