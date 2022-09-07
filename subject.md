@@ -31,7 +31,7 @@
 - 본 프로젝트에서는 X.org와 같은 그래픽 사용자 인터페이스의 사용을 금지한다.
 - Debian 운영체제의 최신 안정판 버전을 설치한다. 
   - CentOS에서는 SELinux가, Debian에서는 AppArmor가 시스템 시동 시 실행되도록 해야 한다.
-- LVM을 사용하여 최소 2개의 암호화된 파티션을 생성한다. 
+- LVM을 사용하여 다음과 같이 파티션을 생성한다.
 
 예시
 ```
@@ -42,9 +42,13 @@ sda						8:0		0	disk
 -sda2					8:2		0	part
 -sda5					8:5		0	part
   -sda5_crypt			254:0	0	crypt
-    -wil--vg-root		254:1	0	lvm		/
-	-wil--vg-swap_1		254:2	0	lvm		[SWAP]
-	-wil--vg-home		254:3	0	lvm		/home
+    -LVMGroup-root		254:1	0	lvm		/
+    -LVMGroup-swap		254:2	0	lvm		[SWAP]
+    -LVMGroup-home		254:3	0	lvm		/home
+    -LVMGroup-var		254:4	0	lvm		/var
+    -LVMGroup-srv		254:5	0	lvm		/srv
+    -LVMGroup-tmp		254:6	0	lvm		/tmp
+    -LVMGroup-var--log	254:7	0	lvm		/var/log
 sr0						11:0	1	rom
 ```
 
@@ -110,6 +114,11 @@ Broadcast message from root@wil (tty1) (Sun Apr 25 15:45:00 2021):
 	#Network: IP 10.0.2.15 (08:00:27:51:9b:a5)
 	#Sudo : 42 cmd
 ```
+
+## 서비스
+
+lighttpd, MariaDB, PHP를 사용해 WordPress 웹사이트를 구축한다.
+NGINX, Apache2를 제외하고 본인이 유용하다고 판단한 서비스를 설치한다.
 
 ## 주 점검사항
 
