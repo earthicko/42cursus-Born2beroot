@@ -186,7 +186,7 @@ sudo passwd
 `apt`를 사용하며 `sysstat`을 설치한다.
 
 ```
-sudo apt install sysstat
+sudo apt install sysstat -y
 sudo nano /root/monitoring.sh
 sudo chmod +x /root/monitoring.sh
 ```
@@ -244,7 +244,7 @@ echo "#Sudo : ${N_SUDO} cmd"
 2. 80번 포트를 통한 연결을 허가한다.
 
 ```
-sudo apt install lighttpd && sudo ufw allow 80
+sudo apt install lighttpd -y && sudo ufw allow 80
 ```
 
 ### MariaDB 설치
@@ -260,7 +260,7 @@ sudo apt install lighttpd && sudo ufw allow 80
 3. `mariadb`를 실행하여 MariaDB에 접속하고 `exit`로 종료한다.
 
 ```
-sudo apt install mariadb-server
+sudo apt install mariadb-server -y
 sudo mysql_secure_installation
 ```
 ```
@@ -289,7 +289,7 @@ exit
    3. `password_here`을 `wordpresspass42`로
 
 ```
-sudo apt install wget && sudo wget http://wordpress.org/latest.tar.gz -P /var/www/html && sudo tar -xzvf /var/www/html/latest.tar.gz && sudo rm /var/www/html/latest.tar.gz && sudo cp -r /var/www/html/wordpress/* /var/www/html && sudo rm -rf /var/www/html/wordpress && sudo cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
+sudo apt install wget -y && sudo wget http://wordpress.org/latest.tar.gz -P /var/www/html && sudo tar -xzvf /var/www/html/latest.tar.gz && sudo rm /var/www/html/latest.tar.gz && sudo cp -r /var/www/html/wordpress/* /var/www/html && sudo rm -rf /var/www/html/wordpress && sudo cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
 sudo vi /var/www/html/wp-config.php
 ```
 
