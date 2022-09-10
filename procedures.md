@@ -289,7 +289,7 @@ exit
    3. `password_here`을 `wordpresspass42`로
 
 ```
-sudo apt install wget -y && sudo wget http://wordpress.org/latest.tar.gz -P /var/www/html && sudo tar -xzvf /var/www/html/latest.tar.gz && sudo rm /var/www/html/latest.tar.gz && sudo cp -r /var/www/html/wordpress/* /var/www/html && sudo rm -rf /var/www/html/wordpress && sudo cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
+sudo apt install php-cgi php-mysql wget -y && sudo wget http://wordpress.org/latest.tar.gz -P /var/www/html && sudo tar -xzvf /var/www/html/latest.tar.gz && sudo rm /var/www/html/latest.tar.gz && sudo cp -r /var/www/html/wordpress/* /var/www/html && sudo rm -rf /var/www/html/wordpress && sudo cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
 sudo vi /var/www/html/wp-config.php
 ```
 
