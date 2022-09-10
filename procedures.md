@@ -265,13 +265,13 @@ sudo mysql_secure_installation
 ```
 ```
 sudo mariadb
-CREATE DATABASE wordpress-db
-GRANT ALL ON wordpress-db.* TO 'wordpress-user'@'localhost' IDENTIFIED BY 'wordpresspass42' WITH GRANT OPTION;
+CREATE DATABASE wordpress_db
+GRANT ALL ON wordpress_db.* TO 'wordpress_user'@'localhost' IDENTIFIED BY 'wordpresspass42' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 exit
 ```
 ```
-mariadb -u wordpress-user -p
+mariadb -u wordpress_user -p
 SHOW DATABASES;
 exit
 ```
@@ -284,8 +284,8 @@ exit
 4. 압축을 해제한 내용을 `/var/www/html`에 옮기고 원본을 삭제한다.
 5. 샘플 설정 파일 `/var/www/html/wp-config-sample.php`을 주 설정 파일 `/var/www/html/wp-config.php`로 설정한다.
 6. 위 파일을 편집하여 MariaDB를 참조하도록 설정한다.
-   1. `database_name_here`을 `wordpress-db`로
-   2. `username_here`을 `wordpress-user`로
+   1. `database_name_here`을 `wordpress_db`로
+   2. `username_here`을 `wordpress_user`로
    3. `password_here`을 `wordpresspass42`로
 
 ```
