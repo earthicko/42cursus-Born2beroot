@@ -251,12 +251,13 @@ sudo apt install lighttpd -y && sudo ufw allow 80
 
 1. `apt`를 통해 `mariadb-server`를 설치한다.
 2. `mysql_secure_installation`을 실행하여 MariaDB의 초기 설정을 변경한다.
-   1. 초기 root 암호는 없다 (운영 체제의 root 사용자와 다름)
-   2. root 암호를 설정하지 않는다. `n`
-   3. 익명 사용자를 제거한다. `Y`
-   4. 원격 root 접속을 불허한다. `Y`
-   5. 테스트 DB를 제거한다. `Y`
-   6. 권한 테이블을 다시 로드한다. `Y`
+   1. 초기 root 암호는 없다 (운영 체제의 root 사용자와 다름) `Enter`
+   2. unix_socket을 사용하지 않는다. `n`
+   3. root 암호를 설정하지 않는다. `n`
+   4. 익명 사용자를 제거한다. `Y`
+   5. 원격 root 접속을 불허한다. `Y`
+   6. 테스트 DB를 제거한다. `Y`
+   7. 권한 테이블을 다시 로드한다. `Y`
 3. `mariadb`를 실행하여 MariaDB에 접속하고 `exit`로 종료한다.
 
 ```
