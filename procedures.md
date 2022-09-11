@@ -111,9 +111,9 @@ Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/b
 1. **가상 기기를 완전히 정지 및 종료**
 2. VirtualBox의 메뉴에서 Tools - Network 진입
    1. Create로 새로운 네트웍 생성
-3. 가상 기기의 설정 창에서 네트웍 메뉴 진입
-   1. 포트포워딩 대화 상자에서 Host IP에 네트웍 IP를, Guest IP에 내부 IP 입력
-   2. 어댑터 2를 Host-only Adapter로 변경 후 3-1에서 생성한 네트웍 지정
+3. 가상 기기의 설정 창에서 네트웍, 어댑터 1, 포트포워딩 메뉴 진입
+   1. 규칙 추가: 네트웍 IP, 포트 4242, 내부 IP, 포트 4242
+   2. 규칙 추가: 네트웍 IP, 포트 8080, 내부 IP, 포트 80
 4. 호스트에서 3-1에서 생성한 IP로 ssh 접속
 
 ### 방화벽
@@ -266,7 +266,7 @@ sudo mysql_secure_installation
 ```
 ```
 sudo mariadb
-CREATE DATABASE wordpress_db
+CREATE DATABASE wordpress_db;
 GRANT ALL ON wordpress_db.* TO 'wordpress_user'@'localhost' IDENTIFIED BY 'wordpresspass42' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 exit
@@ -290,8 +290,8 @@ exit
    3. `password_here`을 `wordpresspass42`로
 
 ```
-sudo apt install php-cgi php-mysql wget -y && sudo wget http://wordpress.org/latest.tar.gz -P /var/www/html && sudo tar -xzvf /var/www/html/latest.tar.gz && sudo rm /var/www/html/latest.tar.gz && sudo cp -r /var/www/html/wordpress/* /var/www/html && sudo rm -rf /var/www/html/wordpress && sudo cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
-sudo vi /var/www/html/wp-config.php
+sudo apt install php-cgi php-mysql wget -y && sudo wget http://wordpress.org/latest.tar.gz && sudo tar -xzf latest.tar.gz && sudo rm latest.tar.gz && sudo cp -r ./wordpress/* /var/www/html && sudo rm -rf ./wordpress && sudo cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
+sudo nano /var/www/html/wp-config.php
 ```
 
 ### 필요 모듈 활성화
@@ -301,6 +301,10 @@ sudo vi /var/www/html/wp-config.php
 ```
 sudo lighty-enable-mod fastcgi && sudo lighty-enable-mod fastcgi-php && sudo service lighttpd force-reload
 ```
+
+### WordPress 웹사이트 설정
+
+웹 브라우저에서 `<네트웍 IP>:8080`으로 접속하여 웹 사이트 설정을 마무리한다.
 
 ## FTP 설치
 
