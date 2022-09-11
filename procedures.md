@@ -114,6 +114,7 @@ Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/b
 3. 가상 기기의 설정 창에서 네트웍, 어댑터 1, 포트포워딩 메뉴 진입
    1. 규칙 추가: 네트웍 IP, 포트 4242, 내부 IP, 포트 4242
    2. 규칙 추가: 네트웍 IP, 포트 8080, 내부 IP, 포트 80
+   3. 규칙 추가: 네트웍 IP, 포트 2121, 내부 IP, 포트 21
 4. 호스트에서 3-1에서 생성한 IP로 ssh 접속
 
 ### 방화벽
@@ -310,29 +311,39 @@ sudo lighty-enable-mod fastcgi && sudo lighty-enable-mod fastcgi-php && sudo ser
 
 1. `apt`를 통해 `vsftpd`를 설치한다.
 2. 21번 포트를 통한 연결을 허가한다.
-3. `/etc/vsftpd.conf`를 편집한다.
-   1. `#write_enable=YES`의 주석을 해제한다.
-   2. `#chroot_local_user=YES`의 주석을 해제한다.
-4. FTP로 접속한 자가 사용할 디렉토리를 생성한다.
+3. FTP로 접속한 자가 사용할 디렉토리를 생성한다.
    1. `/home/donghyle/ftp` 디렉토리를 생성한다.
    2. `/home/donghyle/ftp/files` 디렉토리를 생성한다.
    3. 위 디렉토리의 소유권을 nobody:nogroup에 할당한다.
    4. 위 디렉토리에 쓰기 권한을 모든 유저에게서 없앤다.
 
-다음 줄을 추가한다.
 ```
-user_sub_token=$USER
-local_root=/home/$USER/ftp
+sudo ufw allow 21 && sudo apt install vsftpd -y && sudo mkdir /home/donghyle/ftp && sudo mkdir /home/donghyle/ftp/files && sudo chown nobody:nogroup /home/donghyle/ftp && sudo chmod a-w /home/donghyle/ftp
+sudo nano /etc/vsftpd.conf
 ```
 
-1. `/etc/vsftpd.userlist`에 `donghyle42`를 추가한다.
+- `/etc/vsftpd.conf`를 편집한다.
 
-다음 줄을 추가한다.
+> `#write_enable=YES`의 주석을 해제한다.
+> 
+> `#chroot_local_user=YES`의 주석을 해제한다.
+> 
+> 다음 줄을 추가한다.
+> ```
+> user_sub_token=$USER
+> local_root=/home/$USER/ftp
+> userlist_enable=YES
+> userlist_file=/etc/vsftpd.userlist
+> userlist_deny=NO
+> ```
+
+- `/etc/vsftpd.userlist`에 `donghyle`를 추가한다.
+
 ```
-userlist_enable=YES
-userlist_file=/etc/vsftpd.userlist
-userlist_deny=NO
+sudo nano /etc/vsftpd.userlist
 ```
+
+`ftp 192.168.56.1 -P 2121`로 서버에 접속한다.
 
 # 작업 후 가상 기기 조작
 
