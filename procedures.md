@@ -313,12 +313,13 @@ sudo lighty-enable-mod fastcgi && sudo lighty-enable-mod fastcgi-php && sudo ser
 2. 21번 포트를 통한 연결을 허가한다.
 3. FTP로 접속한 자가 사용할 디렉토리를 생성한다.
    1. `/home/donghyle/ftp` 디렉토리를 생성한다.
-   2. `/home/donghyle/ftp/files` 디렉토리를 생성한다.
-   3. 위 디렉토리의 소유권을 nobody:nogroup에 할당한다.
-   4. 위 디렉토리에 쓰기 권한을 모든 유저에게서 없앤다.
+   2. 위 디렉토리의 소유권을 nobody:nogroup에 할당한다.
+   3. 위 디렉토리에 쓰기 권한을 모든 유저에게서 없앤다.
+   4. `/home/donghyle/ftp/files` 디렉토리를 생성한다.
+   5. 위 디렉토리에 대한 모든 권한을 모두에게 부여한다.
 
 ```
-sudo ufw allow 21 && sudo apt install vsftpd -y && sudo mkdir /home/donghyle/ftp && sudo mkdir /home/donghyle/ftp/files && sudo chown nobody:nogroup /home/donghyle/ftp && sudo chmod a-w /home/donghyle/ftp
+sudo ufw allow 21 && sudo apt install vsftpd -y && sudo mkdir /home/donghyle/ftp && sudo mkdir /home/donghyle/ftp/files && sudo chown nobody:nogroup /home/donghyle/ftp && sudo chmod a-w /home/donghyle/ftp && sudo chmod 777 /home/donghyle/ftp/files
 sudo nano /etc/vsftpd.conf
 ```
 
