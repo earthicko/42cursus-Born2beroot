@@ -153,10 +153,10 @@ sudo chage -M 30 root && sudo chage -m 2 root && sudo chage -W 7 root && sudo ch
 
 #### 암호 복잡도
 
-`libpam-cracklib` 패키지를 `apt`를 통해 설치한다. 암호 및 인증 관련 파일은 `/etc/pam.d`에 저장된다. 암호 관리 정책은 `/etc/pam.d/common-password`에 정의되어 있다.
+`libpam-pwquality` 패키지를 `apt`를 통해 설치한다. 암호 및 인증 관련 파일은 `/etc/pam.d`에 저장된다. 암호 관리 정책은 `/etc/pam.d/common-password`에 정의되어 있다.
 
 ```
-password	requisite	pam_cracklib.so retry=3
+password	requisite	pam_pwquality.so retry=3
 ```
 
 상기된 것과 비슷한 행을 찾은 후 다음 내용을 추가한다.
